@@ -68,6 +68,8 @@ type Server struct {
 	once sync.Once
 }
 
+var isBinary bool
+
 func (s *Server) initServer() {
 	if s.frHandler != nil {
 		return
@@ -402,10 +404,9 @@ func (s *Server) handleFrame(c *Conn, fr *Frame) {
 func (s *Server) handleFrameData(c *Conn, fr *Frame) {
 	var data []byte
 
-	isBinary := fr.Code() == CodeBinary
-
 	bf := c.buffered
 	if bf == nil {
+		isBinary = fr.Code() == CodeBinary
 		if fr.IsFin() {
 			data = fr.Payload()
 		} else {
